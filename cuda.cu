@@ -40,8 +40,9 @@ void MatrixMult(float *M1, float *M2, float *Mout, int n){
             }
             Mout[lig * n + col] = s;
         }
+        
 
-void MatrixAdd(float *M1, float *M2, float *Mout, int n, int p){
+void MatrixAdd(float *M1, float *Mout, int n, int p){
     
     for (int  i = 0; i <n*p; i++){
         Mout[i] = M1[i] + M2[i];
@@ -49,6 +50,25 @@ void MatrixAdd(float *M1, float *M2, float *Mout, int n, int p){
 
 }
 // fonction appellée par un thread ils "connaissent" donc leurs ids 
+        
+ __global__ void conv2D (float *M1, float *Mout, int kernel_size, float *kernel){    
+    int lig =threadIdx.y;
+    int col = blockIdx.x * blockDim.x + threadIdx.x;
+    int Kid = blockDim.x*kernel_size*kernel_size;
+    float temp = 0.;
+    int offset = (kernel_size-1)/2;
+        
+    for (coef_x =0,coef_y < kernel_size ,coef_x ++){
+        for (coef_y =0,coef_y < kernel_size ,coef_x ++){
+            temp = temp + M1[blockDim.x*(threadIdx.x - offset+coef_x)+ coef_y - offset]*kernel[Kid+coef_x*kernel_size+coef_y]
+        }
+    }
+     Mout = [col*blockDim.x+lig]=temp
+}       
+        
+        
+        
+        
 __global__ void cudaMatrixAdd(float *M1, float *M2, float *Mout, int n, int p){
 
         int tid = blockIdx.x * blockDim.x + threadIdx.x;
